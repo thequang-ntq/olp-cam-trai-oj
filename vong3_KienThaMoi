@@ -1,0 +1,84 @@
+#include <bits/stdc++.h>
+#define taskname "B"
+using namespace std;
+
+typedef long long ll;
+
+struct Node {
+	ll w, x, d;
+	Node() {}
+	Node(ll w, ll x, ll d) {
+		this->w = w;
+		this->x = x;
+		this->d = d;
+	}
+};
+
+void Input(){
+	ios_base::sync_with_stdio(false);
+	cin.tie(0); cout.tie(0);
+	if(fopen(taskname".inp", "r")){
+		freopen(taskname".inp", "r", stdin);
+		freopen(taskname".out", "w", stdout);
+	}
+}
+
+void Solve(){
+	int n, m, sum = 0; cin >> n >> m;
+	vector<Node> A(n);
+	for (auto &i: A) {
+		cin >> i.w >> i.x >> i.d;
+		sum += i.w;
+	}
+
+	sort(A.begin(), A.end(), [](Node a, Node b){ return a.x < b.x; });
+
+	auto check = [&](int len){
+		deque<int> DQ;
+		for (auto &i: A) DQ.push_back(i.w);
+
+		int total = 0;
+		for (auto &i: A) 
+			if (i.d == -1) {
+				if (i.x - len <= 0 && DQ.size()) {
+					total += DQ.front();
+					DQ.pop_front();
+				}
+			}
+			else {
+				if (i.x + len >= m && DQ.size()) {
+					total += DQ.back();
+					DQ.pop_back();
+				} 
+			}
+		
+		return 2 * total >= sum;
+	};
+
+	int lt = 0, rt = m + 10;
+	while (lt + 1 < rt) {
+		int mid = (lt + rt) >> 1;
+		if (check(mid)) rt = mid;
+		else lt = mid;
+	}
+
+	vector<Node> B;
+	for (auto &i: A)
+		if (i.d == 1) B.push_back(i);
+
+	int cnt = 0, p = 0, id2 = 0;
+	for (auto &i: A) 
+		if (i.d == -1) {
+			while (p < B.size() && B[p].x + rt < i.x - rt) p++;
+			cnt += id2 - p;
+		}
+		else id2++;
+
+	cout << cnt;
+}
+
+int main(){
+	Input();
+	Solve();
+	return 0;
+}
