@@ -1,0 +1,38 @@
+#include<bits/stdc++.h>
+using namespace std;
+
+
+typedef long long i64;
+i64 n;
+vector<i64> nums;
+
+bool check(i64 num){
+	if(num == 2 or num == 3) return true;
+	if(num % 2 == 0 or num % 3 == 0) return false;
+	for(int i = 5; i * i < num; i += 6){
+		if(num % i == 0 or num % (i + 2) == 0) return false;
+	}
+	return true;
+}
+void solve(i64 num, i64 cnt){
+	if(check(num)){
+		if(cnt == n){
+			nums.push_back(num);
+			return;
+		}
+		for(int i = 1; i <= 9; i += 2){
+			if(i != 5) solve(num * 10 + i, cnt + 1);
+		}
+	}
+}
+int main(){
+	cin >> n;
+	solve(2, 1);
+	solve(3, 1);
+	solve(5, 1);
+	solve(7, 1);
+	cout << nums.size() << '\n';
+	for(i64 x: nums){
+		cout << x << ' ';
+	}			
+}
