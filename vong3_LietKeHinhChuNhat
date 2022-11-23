@@ -1,0 +1,90 @@
+#include <bits/stdc++.h>
+#define taskname "D"
+using namespace std;
+
+struct Node {
+	char L;
+	int x, y;
+	Node() {}
+	Node(char L, int x, int y) {
+		this->L = L;
+		this->x = x;
+		this->y = y;
+	}
+};
+
+int n;
+
+void Input(){
+	ios_base::sync_with_stdio(false);
+	cin.tie(0); cout.tie(0);
+	if(fopen(taskname".inp", "r")){
+		freopen(taskname".inp", "r", stdin);
+		freopen(taskname".out", "w", stdout);
+	}
+}
+
+void Solve(){
+	vector<Node> A(n);
+	for (auto &i: A) cin >> i.L >> i.x >> i.y;
+
+	{
+		set<int> Sx, Sy;
+		for (auto &i: A) {
+			Sx.insert(i.x);
+			Sy.insert(i.y);
+		}
+		vector<int> Ax(Sx.begin(), Sx.end());
+		vector<int> Ay(Sy.begin(), Sy.end());
+
+		for (auto &i: A) {
+			i.x = lower_bound(Ax.begin(), Ax.end(), i.x) - Ax.begin() + 1;
+			i.y = lower_bound(Ay.begin(), Ay.end(), i.y) - Ay.begin() + 1;
+		}
+	}
+
+	vector<vector<Node>> X(30);
+	for (auto &i: A) X[i.x].push_back(i);
+	for (auto &i: X) sort(i.begin(), i.end(), [](Node a, Node b){ return a.y < b.y; });
+
+	vector<string> ans;
+	for (int Xi = 0; Xi < 30; Xi++)
+		for (int Xj = Xi + 1; Xj < 30; Xj++){
+			for (auto &i: X[Xi]) for (auto &j: X[Xi]) if (i.y < j.y) {
+				for (auto &k: X[Xj]) for (auto &l: X[Xj]) if (k.y < l.y) {
+					if (i.y == k.y && j.y == l.y) {
+						string tmp = "";
+						tmp += j.L;
+						tmp += l.L;
+						tmp += k.L;
+						tmp += i.L;
+						ans.push_back(tmp);
+					}
+				}
+			}
+		}
+
+	sort(ans.begin(), ans.end());
+
+	if (ans.size() == 0) cout << " No rectangles\n";
+	else {
+		cout << "\n";
+		for (int i = 0; i < ans.size(); i++) {
+			cout << ans[i] << " ";
+			if ((i + 1) % 10 == 0) cout << "\n";
+		}
+		if (ans.size() % 10 != 0) cout << "\n";
+	}
+}
+
+int main(){
+	Input();
+	int nTest = 0;
+	while (cin >> n) {
+		if (n == 0) exit(0);
+		nTest++;
+		cout << "Point set " << nTest << ":";
+		Solve();
+	}
+	return 0;
+}
