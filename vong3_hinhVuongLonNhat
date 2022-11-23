@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+#define F first
+#define S second
+typedef long long ll;
+typedef long double lf;
+template <typename T> using ordered_set = tree<ll, null_type, less<ll>, rb_tree_tag, tree_order_statistics_node_update>;
+const lf PI = acos(-1);
+const string FNAME = "E";
+
+int main(int argc, wchar_t** argv, wchar_t** envp) {
+	ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+	if (fopen((FNAME + ".INP").c_str(), "r")) {
+		freopen((FNAME + ".INP").c_str(), "r", stdin);
+		freopen((FNAME + ".OUT").c_str(), "w", stdout);
+	}
+	ll t;	cin >> t;
+	while(t --){
+		ll n, m, L, res = 1;	cin >> n >> m >> L;
+		vector<vector<ll>> a(n + 1, vector<ll>(n + 1, 1LL));
+		while(m --){
+			ll x, y;
+			cin >> x >> y, a[x][y] = 0;
+		}
+		for(ll i = 1; i <= n; i ++)
+			for(ll j = 1; j <= n; j ++)
+				a[i][j] += a[i - 1][j] + a[i][j - 1] - a[i - 1][j - 1];
+		ll l = 1, r = n;
+		while(l + 1 < r){
+			ll m = (l + r) / 2;
+			bool ok = false;
+			for(ll i = m; i <= n; i ++)
+				for(ll j = m; j <= n; j ++)
+					for(ll k = m; k <= m; k ++){
+						ll s = a[i][j] - a[i - k][j] - a[i][j - k] + a[i - k][j - k];
+						if(s >= k * k - L){
+							ok = true;
+							goto NEXT;
+						}
+					}
+			NEXT:;
+			if(ok)
+				l = m;
+			else
+				r = m;
+		}
+		cout << l * l << '\n';
+	}
+	return EXIT_SUCCESS;
+}
