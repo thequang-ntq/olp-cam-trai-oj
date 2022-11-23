@@ -1,0 +1,242 @@
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+#define F first
+#define S second
+typedef long long ll;
+typedef long double lf;
+template <typename T> using ordered_set = tree<ll, null_type, less<ll>, rb_tree_tag, tree_order_statistics_node_update>;
+const lf PI = acos(-1);
+const string FNAME = "";
+
+class bigInteger {
+	private:
+		vector<long long> bigNum;
+		long long log10;
+	public:
+		bigInteger() {}
+		bigInteger(vector<long long> vec) {
+			bigNum = vec;
+			reverse(begin(bigNum), end(bigNum));
+			log10 = vec.size();
+		}
+		bigInteger(long long num) {
+			do {
+				bigNum.push_back(num % 10);
+				num /= 10;
+			} while (num);
+			log10 = bigNum.size();
+		}
+		vector<long long> getBigNum() {
+			return bigNum;
+		}
+		void setBigNum(vector<long long> val) {
+			bigNum = val;
+		}
+		long long getLog10() {
+			return log10;
+		}
+		void setLog10(long long val) {
+			log10 = val;
+		}
+		friend ostream& operator << (ostream& os, bigInteger obj) {
+			for (long long idx = obj.log10 - 1; idx >= 0; idx --) {
+				os << obj.bigNum[idx];
+			}
+			return os;
+		}
+		friend istream& operator >> (istream& is, bigInteger& obj) {
+			string str;
+			is >> str;
+			for (char ch: str) {
+				obj.bigNum.push_back(ch - '0');
+			}
+			reverse(begin(obj.bigNum), end(obj.bigNum));
+			obj.log10 = str.length();
+			return is;
+		}
+		bigInteger operator + (bigInteger obj) {
+			long long digit, add = 0;
+			bigInteger res;
+			for (long long idx = 0; idx < max(log10, obj.log10); idx ++) {
+				digit = (idx < log10) * bigNum[idx] + (idx < obj.log10) * obj.bigNum[idx] + add;
+				add = digit / 10;
+				res.bigNum.push_back(digit % 10);
+			}
+			if (add) {
+				res.bigNum.push_back(add);
+			}
+			res.log10 = res.bigNum.size();
+			return res;
+		}
+		bigInteger operator * (long long num) {
+			long long digit, add = 0;
+			bigInteger res;
+			for (long long idx = 0; idx < log10; idx ++) {
+				digit = bigNum[idx] * num + add;
+				add = digit / 10;
+				digit %= 10,
+				         res.bigNum.push_back(digit);
+			}
+			while (add) {
+				res.bigNum.push_back(add % 10);
+				add /= 10;
+			}
+			res.log10 = res.bigNum.size();
+			return res;
+		}
+		bigInteger operator * (bigInteger num) {
+			bigInteger digit, add = 0, res;
+			for (long long idx = 0; idx < log10; idx ++) {
+				digit = num * bigNum[idx] + add;
+				add = digit;
+				res.bigNum.push_back(add.bigNum.front());
+				add.bigNum.erase(begin(add.bigNum));
+				add.log10 --;
+			}
+			if (add.log10) {
+				res.bigNum.insert(end(res.bigNum), begin(add.bigNum), end(add.bigNum));
+			}
+			res.log10 = res.bigNum.size();
+			return res;
+		}
+		bigInteger& operator = (long long num) {
+			do {
+				bigNum.push_back(num % 10);
+				num /= 10;
+			} while (num);
+			log10 = bigNum.size();
+			return *this;
+		}
+		bigInteger& operator = (bigInteger obj) {
+			bigNum = obj.bigNum;
+			log10 = obj.log10;
+			return *this;
+		}
+		bigInteger& operator += (bigInteger obj) {
+			*this = *this + obj;
+			return *this;
+		}
+		bigInteger& operator *= (long long num) {
+			*this = *this * num;
+			return *this;
+		}
+		bigInteger& operator *= (bigInteger obj) {
+			*this = *this * obj;
+			return *this;
+		}
+		bool operator > (bigInteger obj) {
+			if (log10 != obj.log10) {
+				return log10 > obj.log10;
+			}
+			for (long long idx = log10 - 1; idx >= 0; idx --) {
+				if (bigNum[idx] != obj.bigNum[idx]) {
+					return bigNum[idx] > obj.bigNum[idx];
+				}
+			}
+			return false;
+		}
+		bool operator == (bigInteger obj) {
+			if (log10 != obj.log10) {
+				return false;
+			}
+			for (long long idx = log10 - 1; idx >= 0; idx --) {
+				if (bigNum[idx] != obj.bigNum[idx]) {
+					return false;
+				}
+			}
+			return true;
+		}
+		bool operator < (bigInteger obj) {
+			return !(*this >= obj);
+		}
+		bool operator >= (bigInteger obj) {
+			return *this > obj || *this == obj;
+		}
+		bool operator <= (bigInteger obj) {
+			return *this < obj || *this == obj;
+		}
+		bigInteger pow(long long exp) {
+			bigInteger res = 1, obj = *this;
+			while (exp) {
+				if (exp & 1) {
+					res *= obj;
+				}
+				obj *= obj;
+				exp >>= 1;
+			}
+			return res;
+		}
+		long long toInteger() {
+			long long res = 0;
+			for (long long idx = log10 - 1; idx >= 0; idx --) {
+				res = res * 10 + bigNum[idx];
+			}
+			return res;
+		}
+		string toString() {
+			string res;
+			for (long long idx = log10 - 1; idx >= 0; idx --) {
+				res += bigNum[idx] + '0';
+			}
+			return res;
+		}
+		bigInteger getReverseNum() {
+			bigInteger obj = *this;
+			reverse(begin(obj.bigNum), end(obj.bigNum));
+			while (obj.bigNum.back() == '0' && obj.log10 > 1) {
+				obj.bigNum.pop_back();
+				obj.log10 --;
+			}
+			return obj;
+		}
+};
+
+int main(int argc, wchar_t** argv, wchar_t** envp) {
+	ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+	if (fopen((FNAME + ".INP").c_str(), "r")) {
+		freopen((FNAME + ".INP").c_str(), "r", stdin);
+		freopen((FNAME + ".OUT").c_str(), "w", stdout);
+	}
+	ll n;	cin >> n;
+	vector<string> vs(3);
+	for(string &s: vs)
+		cin >> s;
+	vector<vector<ll>> a(3, vector<ll>(n));
+	vector<vector<bigInteger>> dp(2, vector<bigInteger>(n));
+	for(ll i = 0; i < 3; i ++)
+		for(ll j = 0; j < n; j ++)
+			a[i][j] = vs[i][j] - '0';
+	dp[0][0] = a[0][0];
+	dp[1][0] = a[0][0] * 4 + a[1][0] * 2 + a[2][0];
+	if(n > 1)
+		dp[0][1] = dp[1][0] * 8 + a[2][1] * 4 + a[1][1] * 2 + a[0][1],
+		dp[1][1] = a[2][1] + a[2][0] * 2 + a[1][0] * 4 + a[1][1] * 8 + a[0][1] * 16 + a[0][0] * 32;
+	for(ll i = 2; i < n; i ++){
+		dp[0][i] = dp[1][i - 1] * 8 + a[2][i] * 4 + a[1][i] * 2 + a[0][i];
+		dp[1][i] = dp[0][i - 1] * 8 + a[0][i] * 4 + a[1][i] * 2 + a[2][i];
+		for(ll j = 0; j < i; j ++){
+			bigInteger up = !j ? bigInteger(0) : dp[0][j - 1], down = !j ? bigInteger(0) : dp[1][j - 1];
+			for(ll k = j; k <= i; k ++)
+				up = up * 2 + a[0][k],
+				down = down * 2 + a[2][k];
+			for(ll k = i; k >= j; k --)
+				up = up * 2 + a[1][k],
+				down = down * 2 + a[1][k];
+			for(ll k = j; k <= i; k ++)
+				up = up * 2 + a[2][k],
+				down = down * 2 + a[0][k];
+			if(j && down > dp[0][i])
+				dp[0][i] = down;
+			if(up > dp[1][i])
+				dp[1][i] = up;
+		}
+	}
+	bigInteger res = dp[0][n - 1];
+	if(res < dp[1][n - 1])
+		res = dp[1][n - 1];
+	cout << res;
+	return EXIT_SUCCESS;
+}
