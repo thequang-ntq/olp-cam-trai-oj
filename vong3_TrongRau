@@ -1,0 +1,120 @@
+#include <bits/stdc++.h>
+#define taskname "G"
+using namespace std;
+
+const int inf = 0x3c3c3c3c;
+
+class SegTree {
+private:
+	int sz;
+	vector<pair<int, int>> STMax, STMin;
+	vector<int> LazyAdd, LazyAssign;
+
+public:
+	SegTree(int sz){
+		this->sz = sz;
+		STMax.assign(4 * sz + 10, {0, 0});
+		STMin.assign(4 * sz + 10, {-1e9, 0});
+		LazyAdd.assign(4 * sz + 10, 0);
+		LazyAssign.assign(4 * sz + 10, 0);
+		build(1, 1, sz);
+	} 
+	void build(int id, int l, int r) {
+		if (l == r) return void(STMax[id].second = STMin[id].second = l);
+		int m = (l + r) >> 1;
+		build(id<<1, l, m);
+		build(id<<1|1, m+1, r); 
+	}
+	void push_down(int id, int l, int r) {
+		if (LazyAssign[id] != 0) {
+			int t = LazyAssign[id]; LazyAssign[id] = 0;
+			STMax[id].first = STMin[id].first = t;
+			if (l < r) LazyAssign[id<<1] = LazyAssign[id<<1|1] = t;
+		}
+
+		int t = LazyAdd[id]; LazyAdd[id] = 0;
+		if (STMax[id].first != -inf) STMax[id].first += t;
+		if (STMin[id].first != -inf) STMin[id].first += t;
+		if (l < r) LazyAdd[id<<1] += t, LazyAdd[id<<1|1] += t;
+	}
+	pair<int, int> combineMax(pair<int, int> a, pair<int, int> b) {
+		if (a.first >= b.first) return a;
+		return b;
+	}
+	pair<int, int> combineMin(pair<int, int> a, pair<int, int> b) {
+		if (a.first == -inf) return b;
+		if (b.first == -inf) return a;
+		if (a.first <= b.first) return a;
+		return b; 
+	}
+	void update(int id, int l, int r, int u, int v, int val, int type){
+		push_down(id, l, r);
+		if (r < u || v < l) return ;
+		if (u <= l && r <= v) {
+			if (type == 1) { // Assign
+				LazyAssign[id] = val;
+				LazyAdd[id] = 0;
+			}
+			else { // Add
+				LazyAdd[id] += val;
+			}
+			return push_down(id, l, r);
+		}
+		int m = (l + r) >> 1;
+		update(id<<1, l, m, u, v, val, type);
+		update(id<<1|1, m+1, r, u, v, val, type);
+
+		STMax[id] = combineMax(STMax[id<<1], STMax[id<<1|1]);
+		STMin[id] = combineMin(STMin[id<<1], STMin[id<<1|1]);
+	}
+
+	pair<int, int> getMax() { 
+		push_down(1, 1, sz);
+		return STMax[1]; 
+	}
+	pair<int, int> getMin() { 
+		push_down(1, 1, sz);
+		return STMin[1]; 
+	}
+	void update(int u, int v, int val, int type) {
+		update(1, 1, sz, u, v, val, type);
+	}
+};
+
+void Input(){
+	ios_base::sync_with_stdio(false);
+	cin.tie(0); cout.tie(0);
+	if(fopen(taskname".inp", "r")){
+		freopen(taskname".inp", "r", stdin);
+		freopen(taskname".out", "w", stdout);
+	}
+}
+
+void Solve(){
+	int n, r, m; cin >> n >> r >> m;
+	SegTree ST(n);
+	vector<int> A(n + 1);
+	for (int i = 1; i <= n; i++) {
+		cin >> A[i];
+		ST.update(i, i, A[i], 0);
+	}
+
+	for (int i = 1; i <= m; i++) {
+		pair<int, int> Min = ST.getMin();
+		if (Min.first == -inf) break;
+		ST.update(max(Min.second - r, 1), min(n, Min.second + r), 1, 0);
+
+		pair<int, int> Max = ST.getMax();
+		ST.update(max(Max.second - r, 1), min(n, Max.second + r), -inf, 1);
+	}
+
+	pair<int, int> ans = ST.getMax();
+	if (ans.first == -inf) cout << 0;
+	else cout << ans.first;
+}
+
+int main(){
+	Input();
+	Solve();
+	return 0;
+}
