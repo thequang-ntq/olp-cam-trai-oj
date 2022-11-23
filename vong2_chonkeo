@@ -1,0 +1,50 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define ll long long
+const long double esp=1e-12;
+long long fac[61][61];
+	
+int main() {
+  for (int i = 0; i <= 60; ++i) {
+      for (int j = 0; j <= i; ++j) {
+        if (i == j || j == 0) {
+          fac[i][j] = 1;
+        } else {
+          fac[i][j] = fac[i - 1][j] + fac[i - 1][j - 1];
+        }
+      }
+  }
+  int n,A,B;cin>>n>>A>>B;
+  vector<ll> v;
+  ll m;
+  for (int i=0;i<n;i++) {
+    cin>>m;
+    v.push_back(m);
+  }
+  bool kt=false;
+  
+  sort(v.begin(),v.end());
+  for (int i=n-A;i<n;i++) {
+    if (v[n-A]!=v[i]) kt=true;
+  }
+  if (!kt) {
+    ll s=0;
+    int cnt=0;
+    for (int i=0;i<n;i++) if (v[i]==v[n-A]) cnt++;
+    for (int x=A;x<=min(B,cnt);x++) s+=fac[cnt][x];
+    cout<<fixed<<setprecision(6)<<(long double)1.0*v[n-A]<<endl;
+    cout<<s<<endl;
+  } else {
+    ll key=v[n-A];
+    ll s=0;
+    int a=0,b=0;
+    for (int i=n-A;i<n;i++) {
+      if (v[i]==key) a++;
+      s+=v[i];
+    }
+    for (int i=0;i<n;i++) if (v[i]==key) b++;
+    cout<<fixed<<setprecision(6)<<(long double)1.0*s/A<<endl;
+    cout<<fac[b][a];
+  }
+  
+}
