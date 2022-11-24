@@ -1,0 +1,80 @@
+#include <bits/stdc++.h>
+#define taskname "E"
+using namespace std;
+
+struct Segment {
+	int l, r, id; 
+	bool close = false;
+	Segment() {}
+	Segment(int l, int r, int id, bool close) {
+		this->l = l;
+		this->r = r;
+		this->id = id;
+		this->close = close;
+	}
+};
+
+void Input(){
+	ios_base::sync_with_stdio(false);
+	cin.tie(0); cout.tie(0);
+	if(fopen(taskname".inp", "r")){
+		freopen(taskname".inp", "r", stdin);
+		freopen(taskname".out", "w", stdout);
+	}
+}
+
+void Solve(){
+	int n; cin >> n;
+	vector<Segment> A, B(n + 1);
+	vector<vector<int>> nxt(n + 1);
+	for (int i = 1; i <= n; i++) {
+		int l, r; cin >> l >> r;
+		if (l > r) swap(l, r);
+		B[i] = Segment(l, r, i, false);
+		A.push_back(Segment(l, r, i, false));
+		A.push_back(Segment(r, l, i, true));
+	} 
+
+	sort(A.begin(), A.end(), [](const Segment &a, const Segment &b){
+		return a.l < b.l || (a.l == b.l && a.close < b.close);
+	});
+
+	set<array<int, 3>> S;
+	for (auto &i: A) {
+		if (i.close == false) {
+			if (S.size()) {
+				int id_begin = (*S.begin())[2]; 
+				nxt[i.id].push_back(id_begin);
+				nxt[id_begin].push_back(i.id);
+			}
+
+			S.insert({i.l, i.r, i.id});
+		}
+		else S.erase({i.r, i.l, i.id});
+	}
+
+	vector<bool> visited(n + 1, false);
+	function<void(int, int&, int&)> dfs = [&](int u, int &l, int &r){
+		visited[u] = true;
+		l = min(l, B[u].l);
+		r = max(r, B[u].r);
+		for (int &v: nxt[u])
+			if (!visited[v]) dfs(v, l, r);
+	};
+
+	int ans = 0;
+	for (int i = 1; i <= n; i++) {
+		if (visited[i]) continue;
+		int l = 1e9, r = -1e9;
+		dfs(i, l, r);
+		ans = max(ans, r - l);
+	}
+
+	cout << ans;
+}
+
+int main(){
+	Input();
+	Solve();
+	return 0;
+}
