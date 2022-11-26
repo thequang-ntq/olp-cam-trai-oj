@@ -1,0 +1,100 @@
+#include<bits/stdc++.h>
+#define ll long long
+#define ull unsigned long long
+#define u128 __uint128_t
+#define db double
+#define fi first
+#define se second
+#define ii pair<ll,int>
+#define mp make_pair
+#define pb push_back
+#define all(a) (a).begin(), (a).end()
+
+#define FOR(i, a, b) for(int i = (a), _b = (b); i <= _b; ++i)
+#define FORD(i, a, b) for(int i = (a), _b = (b); i >= _b; --i)
+
+#define bit10 bitset<10>
+#define bit30 bitset<30>
+#define getBit(x, i) ((x) >> (i)  & 1LL)
+#define turnOn(x, i) ((x) |= (1LL << i))
+#define turnOff(x, i) ((x) ^= (1LL << i))
+#define cntBit(n) __builtin_popcountll(n)
+
+#define iii pair<ii,int>
+
+template <typename T> bool maximize(const T &res, T &val){
+    if(res < val){
+        res = val;
+        return 1;
+    }
+    return 0;
+}
+
+template <typename T> bool minimize(const T &res, T &val){
+    if(res > val){
+        res = val;
+        return 1;
+    }
+    return 0;
+}
+
+using namespace std;
+
+const int MOD = (int)1e9+7;
+
+int n;
+ll p, k;
+vector<ll>a;
+ll sum = 0;
+
+void ip(){
+
+    cin >> n >> k >> p;
+
+    FOR(i,1,n){
+
+        ll a1;
+        cin >> a1;
+        a1 %= MOD;
+        a.pb(a1);
+
+        sum += a1;
+        sum %= MOD;
+
+    }
+
+    --p;
+
+    ll L = p;
+    ll R = p + k - 1;
+    ll res = 0;
+
+    while((R - L + 1) % n != 0 && L <= R){
+        res += a[L % n];
+        ++L;
+    }
+
+    res += (R - L + 1) / n * sum;
+    res %= MOD;
+
+    cout << res;
+
+}
+
+int main(){
+
+    ios_base::sync_with_stdio(0);
+    cin.tie(0), cout.tie(0);
+
+    if(fopen("T.INP", "r")){
+        freopen("T.INP", "r", stdin);
+        freopen("T.OUT", "w", stdout);
+    }
+
+
+    int numtest = 1;
+//    cin >> numtest;
+    FOR(i,1,numtest)ip();
+
+
+}
