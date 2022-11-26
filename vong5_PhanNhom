@@ -1,0 +1,134 @@
+#include<bits/stdc++.h>
+#define ll long long
+#define ull unsigned long long
+#define u128 __uint128_t
+#define db double
+#define fi first
+#define se second
+#define ii pair<ll,ll>
+#define mp make_pair
+#define pb push_back
+#define all(a) (a).begin(), (a).end()
+
+#define FOR(i, a, b) for(int i = (a), _b = (b); i <= _b; ++i)
+#define FORD(i, a, b) for(int i = (a), _b = (b); i >= _b; --i)
+
+#define bit10 bitset<10>
+#define bit30 bitset<30>
+#define getBit(x, i) ((x) >> (i)  & 1LL)
+#define turnOn(x, i) ((x) |= (1LL << i))
+#define turnOff(x, i) ((x) ^= (1LL << i))
+#define cntBit(n) __builtin_popcountll(n)
+
+#define iii pair<ii,int>
+
+template <typename T> bool maximize(const T &res, T &val){
+    if(res < val){
+        res = val;
+        return 1;
+    }
+    return 0;
+}
+
+template <typename T> bool minimize(const T &res, T &val){
+    if(res > val){
+        res = val;
+        return 1;
+    }
+    return 0;
+}
+
+using namespace std;
+
+const int MOD = (int)1e9+7;
+const double eps = 1e-6;
+
+struct point{
+
+    int x, y;
+
+    point(int _x = 0, int _y = 0){
+        x = _x;
+        y = _y;
+    }
+
+    void show(){
+        cout << x << " " << y << '\n';
+    }
+
+};
+
+double distance(point u, point v){
+    int dx = u.x - v.x;
+    int dy = u.y - v.y;
+
+    return sqrt(dx * dx + dy * dy);
+}
+
+int n, k;
+vector<ll>a;
+
+bool check(ll val){
+
+    ll re = 0;
+    for(ll a1:a)re += min(val, a1);
+
+    if(val * k <= re)return 1;
+    return 0;
+
+}
+
+ll cnp(){
+
+    ll L = 0;
+    ll R = 10000000000000000;
+
+    int tim = 0;
+
+    while(true){
+        if(L == R)return L;
+        if(L == R - 1)return check(R) ? R : L;
+
+//        if(++tim > 100)break;
+//        cout << L << " " << R << '\n';
+
+        ll m = (L + R)/2;
+        if(check(m)) L = m;
+        else R = m - 1;
+
+    }
+
+}
+
+void ip(){
+
+    cin >> n >> k;
+
+    FOR(i,1,n){
+        int a1;
+        cin >> a1;
+        a.pb(a1);
+    }
+
+    sort(all(a),[](int a1, int b1){return a1 > b1;});
+
+    cout << cnp();
+
+}
+
+int main(){
+
+    ios_base::sync_with_stdio(0);
+    cin.tie(0), cout.tie(0);
+
+    if (fopen("T.inp", "r")) {
+		freopen("T.inp", "r", stdin);
+		freopen("T.out", "w", stdout);
+	}
+
+    int numtest = 1;
+//    cin >> numtest;
+    FOR(i,1,numtest)ip();
+
+
+}
