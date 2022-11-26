@@ -1,0 +1,6 @@
+int main(){
+	ll a;
+	cin>>a;
+//	cout<<chia(nhan(nhan(a,cong(a,"1")),cong(nhan("2",a),"1")),6);
+    cout<<((a%2021)*(a%2021+1)*(a%2021*2+1)/6)%2021;
+}
