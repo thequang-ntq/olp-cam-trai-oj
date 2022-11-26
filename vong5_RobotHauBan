@@ -1,0 +1,111 @@
+#include<bits/stdc++.h>
+#define ll long long
+#define ull unsigned long long
+#define u128 __uint128_t
+#define db double
+#define fi first
+#define se second
+#define ii pair<ll,ll>
+#define mp make_pair
+#define pb push_back
+#define all(a) (a).begin(), (a).end()
+
+#define FOR(i, a, b) for(int i = (a), _b = (b); i <= _b; ++i)
+#define FORD(i, a, b) for(int i = (a), _b = (b); i >= _b; --i)
+
+#define bit10 bitset<10>
+#define bit30 bitset<30>
+#define getBit(x, i) ((x) >> (i)  & 1LL)
+#define turnOn(x, i) ((x) |= (1LL << i))
+#define turnOff(x, i) ((x) ^= (1LL << i))
+#define cntBit(n) __builtin_popcountll(n)
+
+#define iii pair<ii,int>
+
+template <typename T> bool maximize(const T &res, T &val){
+    if(res < val){
+        res = val;
+        return 1;
+    }
+    return 0;
+}
+
+template <typename T> bool minimize(const T &res, T &val){
+    if(res > val){
+        res = val;
+        return 1;
+    }
+    return 0;
+}
+
+using namespace std;
+
+const int MOD = (int)1e9+7;
+const double eps = 1e-6;
+
+struct point{
+
+    int x, y;
+
+    point(int _x = 0, int _y = 0){
+        x = _x;
+        y = _y;
+    }
+
+    void show(){
+        cout << x << " " << y << '\n';
+    }
+
+};
+
+double distance(point u, point v){
+    int dx = u.x - v.x;
+    int dy = u.y - v.y;
+
+    return sqrt(dx * dx + dy * dy);
+}
+
+int n;
+vector<point>a;
+
+db nho[1007][1007];
+
+db trau(int id, int i1, int i2){
+
+    if(id == a.size()){
+        return 0;
+    }
+
+    db &res = nho[i1][i2];
+    if(res > eps)return res;
+    res = min(trau(id + 1, id, i2) + distance(a[id], a[i1]), trau(id + 1, i1, id) + distance(a[id], a[i2]));
+
+    return res;
+
+}
+
+void ip(){
+
+    cin >> n;
+
+    FOR(i,1,n + 2){
+        point a1;
+        cin >> a1.x >> a1.y;
+        a.pb(a1);
+    }
+
+    cout << floor(trau(2,0,1));
+
+}
+
+int main(){
+
+    ios_base::sync_with_stdio(0);
+    cin.tie(0), cout.tie(0);
+
+    int numtest = 1;
+//    cin >> numtest;
+    FOR(i,1,numtest)ip();
+
+
+}
