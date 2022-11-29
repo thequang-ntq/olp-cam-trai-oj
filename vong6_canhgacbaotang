@@ -1,0 +1,91 @@
+#include <bits/stdc++.h>
+#define taskname "B"
+using namespace std;
+
+typedef long long ll;
+const ll inf = 0x3c3c3c3c3c3c;
+
+struct People {
+	int l, r, cost;
+
+	friend bool operator <(People a, People b) {
+		return a.l < b.l;
+	}
+};
+
+class SegTree {
+private:
+	int sz;
+	vector<ll> ST, Lazy;
+
+public:
+	SegTree(int sz) {
+		this->sz = sz;
+		ST.assign(4 * sz + 10, inf);
+		Lazy.assign(4 * sz + 10, inf);
+	}
+	void push_down(int id, int l, int r) {
+		ST[id] = min(ST[id], Lazy[id]);
+		if(l < r) {
+			Lazy[id<<1] = min(Lazy[id<<1], Lazy[id]);
+			Lazy[id<<1|1] = min(Lazy[id<<1|1], Lazy[id]);
+		}
+		Lazy[id] = inf;
+	}
+	void update(int id, int l, int r, int u, int v, ll val) {
+		push_down(id, l, r);
+		if (r < u || v < l) return ;
+		if (u <= l && r <= v) {
+			Lazy[id] = min(Lazy[id], val);
+			return push_down(id, l, r);
+		}
+		int m = (l + r) >> 1;
+		update(id<<1, l, m, u, v, val);
+		update(id<<1|1, m+1, r, u, v, val);
+		ST[id] = min(ST[id<<1], ST[id<<1|1]);
+	}
+
+	ll get(int id, int l, int r, int u, int v) {
+		push_down(id, l, r);
+		if (r < u || v < l) return inf;
+		if (u <= l && r <= v) return ST[id];
+		int m = (l + r) >> 1;
+		return min(get(id<<1, l, m, u, v), get(id<<1|1, m+1, r, u, v));
+	}
+
+	void update(int u, int v, ll val){ update(1, 0, sz, u, v, val); }
+	ll get(int u, int v) { return get(1, 0, sz, u, v); }
+};
+
+void Input(){
+	ios_base::sync_with_stdio(false);
+	cin.tie(0); cout.tie(0);
+	if(fopen(taskname".inp", "r")){
+		freopen(taskname".inp", "r", stdin);
+		freopen(taskname".out", "w", stdout);
+	}
+}
+
+void Solve(){
+	int n, m; cin >> n >> m;
+	vector<People> P(m);
+	SegTree ST(n);
+	for (auto &i: P) cin >> i.l >> i.r >> i.cost;
+	sort(P.begin(), P.end());
+
+	ST.update(0, 0, 0);
+	for (auto &p: P) {
+		// cout << p.l << " " << p.r << " " << p.cost << '\n';
+		ll val = ST.get(p.l, p.r) + p.cost;
+		// cout << val << "\n";
+		ST.update(p.l, p.r, val);
+	}
+
+	cout << ST.get(n, n);
+}
+
+int main(){
+	Input();
+	Solve();
+	return 0;
+}
