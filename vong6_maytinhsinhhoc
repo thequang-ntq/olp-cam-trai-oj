@@ -1,0 +1,48 @@
+import sys
+try :
+	sys.stdin = open("G.inp", "r")
+	sys.stdout = open("G.out", "w")
+except :
+	sys.stdin = sys.__stdin__
+	sys.stdout = sys.__stdout__
+
+def toDec(n: int, k: int) :
+	ans, base = 0, 1
+	while n > 0 :
+		ans += base * (n % 10)
+		n, base = n // 10, base * k
+	return ans
+
+def cnt(n: int, k: int) :
+	ans, i = 0, k
+	while i <= n :
+		ans += n // i
+		i *= k
+	return ans
+
+k, n = int(input()), int(input())
+n = toDec(n, k)
+
+x = 0
+if k == 2 or k == 3 or k == 5 or k == 7:
+	x = cnt(n, k)
+elif k == 4 :
+	x = cnt(n, 2) // 2
+elif k == 6 :
+	x = min(cnt(n, 3), cnt(n, 2))
+elif k == 8 :
+	x = cnt(n, 2) // 3
+elif k == 9 :
+	x = cnt(n, 3) // 2
+else :
+	x = min(cnt(n, 5), cnt(n, 2))
+
+ans = ""
+while x != 0 :
+	ans += chr(x % k + 48)
+	x //= k
+
+if ans == "": 
+	print(0)
+else :
+	print(ans[::-1])
