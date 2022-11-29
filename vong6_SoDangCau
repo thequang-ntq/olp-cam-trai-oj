@@ -1,0 +1,44 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+int main()
+{
+	ios_base :: sync_with_stdio(false); cin.tie(0); cout.tie(0);
+	if (fopen("test.inp", "r"))
+    {
+        freopen("test.inp", "r", stdin);
+        freopen("test.out", "w", stdout);
+    }
+    vector <int> F(1009);
+    for (int i = 1; i <= 9; ++i)
+        F[i] = 1;
+    for (int i = 10; i <= 99; ++i)
+        if (i % 11 == 0)
+            F[i] = 11;
+        else
+            F[i] = 10;
+    for (int i = 100; i <= 999; ++i)
+    {
+        int a = i / 100;
+        int b = (i - a * 100) / 10;
+        int c = i % 10;
+        if (a == b && b == c)
+            F[i] = 111;
+        else if (a == b)
+            F[i] = 110;
+        else if (b == c)
+            F[i] = 100;
+        else if (a == c)
+            F[i] = 101;
+        else
+            F[i] = 102;
+    }
+    F[1000] = 1000;
+    int n;
+    cin >> n;
+    int ans = 0;
+    for (int i = 1; i <= n; ++i)
+        ans += F[i];
+    cout << ans;
+}
