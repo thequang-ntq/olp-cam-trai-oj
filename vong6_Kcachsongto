@@ -1,0 +1,57 @@
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+#define F first
+#define S second
+typedef long long ll;
+typedef long double lf;
+template <typename T> using ordered_set = tree<ll, null_type, less<ll>, rb_tree_tag, tree_order_statistics_node_update>;
+const lf PI = acos(-1);
+const string FNAME = "A";
+const ll MOD = 1e9 + 7;
+
+vector<long long> p;
+inline void sieveSegment(long long begin, long long end) {
+	p.clear();
+	vector<bool> ok(end - begin + 1, true);
+	for (long long div = 2; div * div <= end; div ++) {
+		for (long long num = max(div * div, (begin + div - 1) / div * div); num <= end; num += div) {
+			ok[num - begin] = false;
+		}
+	}
+	if (begin == 1) {
+		ok[0] = false;
+	}
+	for (long long num = begin; num <= end; num ++) {
+		if (ok[num - begin]) {
+			p.push_back(num);
+		}
+	}
+}
+
+int main(int argc, wchar_t** argv, wchar_t** envp) {
+	ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+	if (fopen((FNAME + ".INP").c_str(), "r")) {
+		freopen((FNAME + ".INP").c_str(), "r", stdin);
+		freopen((FNAME + ".OUT").c_str(), "w", stdout);
+	}
+    ll l, r;
+    while(cin >> l >> r){
+        sieveSegment(l, r);
+        if(p.size() < 2)
+            cout << "There are no adjacent primes.\n";
+        else{
+            ll c1, c2, d1, d2, mn = 1e5, mx = 0;
+            for(ll i = 1; i < p.size(); i ++){
+                if(p[i] - p[i - 1] < mn)
+                    mn = p[i] - p[i - 1], c1 = p[i - 1], c2 = p[i];
+                if(p[i] - p[i - 1] > mx)
+                    mx = p[i] - p[i - 1], d1 = p[i - 1], d2 = p[i];
+            }
+            cout << c1 << "," << c2 << " are closest, " << d1 << "," << d2 << " are most distant.\n";
+        }
+    }
+	return EXIT_SUCCESS;
+}
