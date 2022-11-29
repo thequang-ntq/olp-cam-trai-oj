@@ -1,0 +1,28 @@
+#include <bits/stdc++.h>
+#define ll long long
+using namespace std;
+void indef(){
+	#ifndef ONLINE_JUDGE
+		freopen("../test/input.txt", "r", stdin);
+	    freopen("../test/output.txt", "w", stdout);
+	#endif
+}
+bool kt(string s){
+    for(ll i = 0; i < s.size()/2;i++){
+        if(s[i] != s[s.size()-i-1]) return false;
+    }
+    return true;
+}
+int main(){
+    indef();
+    string s;
+    ll n,k;
+    cin >> n >> k;
+    cin >> s;
+    for(ll i = 0 ; i <= k;i++){
+        if(kt(s.substr(i,n-k))){
+            cout << s.substr(i,n-k);return 0;
+        }
+    }
+    cout << "No";
+}
