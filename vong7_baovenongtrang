@@ -1,0 +1,72 @@
+#include <bits/stdc++.h>
+#define x first
+#define y second
+using namespace std;
+
+typedef pair<int, int> ii;
+const int maxn = 1010;
+
+int n, m, res = 0;
+vector<ii> _move;
+int d[maxn][maxn];
+int a[maxn][maxn];
+
+void operator <<(ostream &os, ii a){
+    os << "(" << a.x << " ; " << a.y << ")\n";
+}
+ii operator +(ii a, ii b){
+    return ii(a.x + b.x, a.y + b.y);
+}
+bool check(ii a){
+    return 1 <= a.x && a.x <= n 
+        && 1 <= a.y && a.y <= m;
+}
+void Input(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    #ifndef ONLINE_JUDGE
+    freopen("E.inp", "r", stdin);
+    freopen("E.out", "w", stdout);
+    #endif
+    cin >> n >> m;
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= m; j++){
+            cin >> a[i][j];
+            if (a[i][j] == 0) d[i][j] = 1;
+        }
+}
+void DFS(ii u, bool &ok){
+    d[u.x][u.y] = 1;
+
+    for (auto &k: _move){
+        ii v = u + k;
+        if (check(v)){
+            if (a[v.x][v.y] > a[u.x][u.y]) ok = false;
+            if (a[v.x][v.y] == a[u.x][u.y] && d[v.x][v.y] == 0)
+                DFS(v, ok);
+        }
+    }
+
+}
+void Solve(){
+    for (int i = -1; i <= 1; i++)
+        for (int j = -1; j <= 1; j++)
+            if (!(i == 0 && j == 0)) _move.push_back({i, j});
+    
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= m; j++){
+            bool ok = true;
+            if (d[i][j] == 0){
+                DFS({i, j}, ok);
+                res += ok;
+            }
+        }
+
+    cout << res;
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
