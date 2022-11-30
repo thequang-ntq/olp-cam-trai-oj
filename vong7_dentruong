@@ -1,0 +1,71 @@
+#include <bits/stdc++.h>
+#define taskname "D"
+using namespace std;
+
+const int inf = 0x3c3c3c3c;
+
+void Input(){
+	ios_base::sync_with_stdio(false);
+	cin.tie(0); cout.tie(0);
+	if(fopen(taskname".inp", "r")){
+		freopen(taskname".inp", "r", stdin);
+		freopen(taskname".out", "w", stdout);
+	}
+}
+vector<int> Dijkstra(int s, const vector<vector<pair<int, int>>> &adj){
+	vector<int> dist(adj.size(), inf);
+	vector<bool> visited(adj.size(), false);
+
+	priority_queue<pair<int, int>> PQ;
+	PQ.push({0, s}); dist[s] = 0;
+	while (!PQ.empty()) {
+		int u = PQ.top().second; PQ.pop();
+		if (visited[u]) continue;
+		visited[u] = true;
+
+		for (auto &e: adj[u]) {
+			int v = e.first, c = e.second;
+			if (visited[v]) continue;
+			if (dist[v] > dist[u] + c) {
+				dist[v] = dist[u] + c;
+				PQ.push({-dist[v], v});
+			}
+		}
+	}
+
+	return dist;
+}
+void Solve(){
+	int n, m, k; cin >> n >> m >> k;
+	vector<vector<pair<int, int>>> adj1(n + 1);
+	vector<vector<pair<int, int>>> adj2(n + 1);
+	vector<vector<pair<int, int>>> adj3(n + 1);
+	for (int i = 1; i <= m; i++) {
+		int u, v, c1, c2; cin >> u >> v >> c1 >> c2;
+		adj1[v].push_back({u, c1});
+		adj2[u].push_back({v, c2});
+		adj3[v].push_back({u, c2});
+	}
+
+	vector<int> dist1 = Dijkstra(1, adj2);
+	vector<int> distN = Dijkstra(n, adj3);
+	vector<int> distK = Dijkstra(k, adj1);
+
+	// for (int i = 1; i <= n; i++) cout << distK[i] << " \n"[i == n];
+	// for (int i = 1; i <= n; i++) cout << dist1[i] << " \n"[i == n];
+	// for (int i = 1; i <= n; i++) cout << distN[i] << " \n"[i == n];
+
+	int ans = inf;
+	for (int i = 1; i <= n; i++) 
+		if (dist1[i] + distK[i] <= 59) {
+			ans = min(ans, dist1[i] + distN[i]);
+		}
+	
+	cout << ans;
+}
+
+int main(){
+	Input();
+	Solve();
+	return 0;
+}
