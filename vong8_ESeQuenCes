@@ -1,0 +1,38 @@
+#pragma once
+#pragma optimize("I_LOVE_U")
+#pragma GCC optimize("O3,unroll-loops")
+//#pragma GCC target("avx2,bmi,bmi2,lzcnt,popcnt")
+#include <bits/stdc++.h>
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace std;
+using namespace __gnu_pbds;
+#define F first
+#define S second
+typedef long long ll;
+typedef long double lf;
+template <typename T> using ordered_set = tree<ll, null_type, less<ll>, rb_tree_tag, tree_order_statistics_node_update>;
+const lf PI = acos(-1);
+const string FNAME = "A";
+const ll MOD = 1e9 + 7;
+
+int main(int argc, wchar_t** argv, wchar_t** envp) {
+	ios::sync_with_stdio(false), cin.tie(nullptr), cout.tie(nullptr);
+	if (fopen((FNAME + ".INP").c_str(), "r")) {
+		freopen((FNAME + ".INP").c_str(), "r", stdin);
+		freopen((FNAME + ".OUT").c_str(), "w", stdout);
+	}
+	string s;	cin >> s;
+	ll res = 0, cnt1 = 0, base = 1;
+	for(char ch: s)
+		if(ch == '0')
+			res = (res + cnt1) % MOD;
+		else if(ch == '1')
+			cnt1 = (cnt1 + base) % MOD;
+		else
+			res = (res * 2 + cnt1) % MOD,
+			cnt1 = (cnt1 * 2 + base) % MOD,
+			base = (base << 1) % MOD;
+	cout << res;
+	return EXIT_SUCCESS;
+}
