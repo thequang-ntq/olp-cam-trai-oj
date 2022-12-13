@@ -1,0 +1,70 @@
+#include <bits/stdc++.h>
+#define faster ios_base::sync_with_stdio(false), cin.tie(0), cout.tie(0)
+using namespace std;
+ 
+const int maxn = 1e3+10;
+ 
+int n, m, ans;
+int e[maxn], par[maxn], rk[maxn];
+int d[maxn];
+ 
+void Input(){
+    faster;
+    #ifndef ONLINE_JUDGE
+    freopen("E.INP","r",stdin);
+    freopen("E.OUT","w",stdout);
+    #endif
+    cin >> n >> m;
+}
+void Init(){
+    for (int i = 1; i <= n; i++){
+        par[i] = i;
+        rk[maxn] = 1;
+    }
+}
+int find(int u){
+    while (par[u] != u) return par[u] = find(par[u]);
+    return par[u];
+}
+void join(int u, int v){
+    u = find(u);
+    v = find(v);
+ 
+    if (u != v){
+        if (rk[u] > rk[v]) swap(u, v);
+        rk[v] += rk[u];
+        par[u] = v;
+    }
+}
+void Solve(){
+    for (int i = 1; i <= m; i++){
+        int u, v; char a;
+        cin >> a >> u >> v;
+        if (a == 'F') join(u, v);
+        else {
+            if (e[u] != 0) join(v, e[u]);
+            if (e[v] != 0) join(u, e[v]);
+ 
+            e[u] = v;
+            e[v] = u;
+        }        
+    }
+}
+void Output(){
+    for (int i = 1; i <= n; i++){
+        int u = find(i);
+        if (d[u] == 0){
+            ans++;
+            d[u] = 1;
+        }
+    }
+    cout << ans;
+}
+ 
+int main(){
+    Input();
+    Init();
+    Solve();
+    Output();
+    return 0;
+}
