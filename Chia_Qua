@@ -1,0 +1,23 @@
+#include <bits/stdc++.h>
+#define _CRT_SECURE_NO_WARNINGS
+#define MO ios_base::sync_with_stdio(0);cin.tie(0);cout.tie(0)
+#define fix(n) cout<<fixed<<setprecision(n)
+#define all(v) (v).begin(),(v).end()
+#define allr(v) (v).rbegin(),(v).rend()
+#define el "\n"
+#define ll long long
+#define pii pair <int,int>
+using namespace std;
+int main(){
+	ll x,y,m,dem,i,j;
+	cin>>x>>y;
+	dem=0;
+	m=trunc(sqrt(x));
+	for(i=1;i<=m;i++){
+		j=x/i;
+		if(x%i==0 && y%i==0) dem++;
+		if(x%j==0 && y%j==0 && i!=j) dem++;
+	}
+	cout<<dem;
+	return 0;
+}
