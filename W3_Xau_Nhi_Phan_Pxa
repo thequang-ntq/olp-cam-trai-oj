@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+using namespace std;
+vector<string> s;
+int n;
+int num[20];
+void solve(int it, int x)
+{
+	if(it == n)
+	{
+		num[it] = x;
+		for(int i = 1; i <= n; ++i)
+		{
+			if(i == 1) cout << num[i];
+			else
+			{ 
+				int a = num[i] == num[i - 1] ? 0:1;
+				cout << a;
+			}
+		}
+		cout << '\n';
+	}
+	else{
+		num[it] = x;
+		solve(it + 1, 0);
+		solve(it + 1, 1);
+	}
+	
+}
+int main(){
+	cin >> n;
+	solve(1, 0);
+	solve(1, 1);
+}
