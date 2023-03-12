@@ -1,0 +1,33 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+#include <map>
+#include <unordered_map>
+
+using namespace std;
+
+#define int long long
+
+int32_t main() {
+    //freopen("input.txt", "r", stdin);
+    int n;
+    cin >> n;
+    vector<pair<int, int>> a(n);
+    for (int i = 0; i < n; i++) {
+        cin >> a[i].first >> a[i].second;
+    }
+    unordered_map<int, int> x;
+    unordered_map<int, int> y;
+    for (int i = 0; i < n; i++) {
+        x[a[i].first]++;
+        y[a[i].second]++;
+    }
+    int ans = 0;
+    for (int i = 0; i < n; i++) {
+        int u = x[a[i].first];
+        int v = y[a[i].second];
+        ans += (u - 1) * (v - 1);
+    }
+    cout << ans;
+}
