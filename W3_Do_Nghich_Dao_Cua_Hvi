@@ -1,0 +1,31 @@
+#include <bits/stdc++.h>
+#define ll long long
+#define el "\n"
+#define fu(i, a, b) for(ll i = a; i <= b; i++)
+#define fd(i, a, b) for(ll i = a; i >= b; i--)
+#define fi first
+#define se second
+#define INF 1e18
+
+using namespace std;
+
+#include <ext/pb_ds/assoc_container.hpp>
+using namespace __gnu_pbds;
+
+typedef tree<ll, null_type, less<ll>, rb_tree_tag, tree_order_statistics_node_update> ordered_set;
+
+ll n;
+ordered_set st;
+
+int main()
+{
+    cin >> n;
+    fu(i, 1, n)
+    {
+        ll num;
+        cin >> num;
+        cout << st.size() - st.order_of_key(num) << ' ';
+        st.insert(num);
+    }
+    return 0;
+}
