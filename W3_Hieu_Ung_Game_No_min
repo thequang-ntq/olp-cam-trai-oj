@@ -1,0 +1,68 @@
+#include <bits/stdc++.h>
+#define taskname "A"
+using namespace std;
+
+typedef long double ld;
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+
+void Solve() {
+    int n; cin >> n;
+    vector<ld> x(n + 1);
+    for (int i = 1; i <= n; i++) cin >> x[i];
+    sort(x.begin(), x.end());
+
+    vector<ld> lt(n + 2, 0), rt(n + 2, 0);
+    for (int i = 2; i <= n; i++) {
+        ld l = 0, r = 1e18;
+        for (int bs = 1; bs <= 100; bs++) {
+            ld m = (l + r) / 2;
+            int pos = lower_bound(x.begin() + 1, x.begin() + i, x[i] - m) - x.begin();
+            if (pos == i || m < lt[pos] + 1) l = m;
+            else r = m; 
+        }
+        lt[i] = r;
+    }
+
+    for (int i = n - 1; i >= 1; i--) {
+        ld l = 0, r = 1e18;
+        for (int bs = 1; bs <= 100; bs++) {
+            ld m = (l + r) / 2;
+            int pos = upper_bound(x.begin() + i + 1, x.begin() + n + 1, x[i] + m) - x.begin() - 1;
+            if (pos == i || m < rt[pos] + 1) l = m;
+            else r = m; 
+        }
+        rt[i] = r;
+    }
+
+    auto check = [&](ld R) {
+        for (int i = 1, p = 1; i <= n; i++) {
+            while (p <= i && (x[i] - x[p]) / 2 > R) p++;
+            if (p == i && R >= lt[p] && R >= rt[p]) return true;
+            if (p != i && R - 1 >= lt[p] && R - 1 >= rt[i]) return true; 
+        }
+        return false;
+    };
+
+    ld l = 0, r = 1e18;
+    for (int bs = 1; bs <= 100; bs++) {
+        ld m = (l + r) / 2;
+        if (check(m)) r = m;
+        else l = m;
+    }
+
+    cout << fixed << setprecision(1) << r;
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
