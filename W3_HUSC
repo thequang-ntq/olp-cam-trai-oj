@@ -1,0 +1,33 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+using i64 = long long;
+// UUCCHCCHSUUHUSHSCHSC
+// 2
+int main(){
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	int k; string s;
+	cin >> s >> k;
+	int n = s.size();
+	int H = 0, U = 0, S = 0, C = 0;
+	int MIN = 1e7;
+	for (int i = 0, j = 0; i < n && j < n;) {
+		if (s[j] == 'H') H++;
+		else if (s[j] == 'U') U++;
+		else if (s[j] == 'S') S++;
+		else if (s[j] == 'C') C++;
+		while ((H >= k) && (U >= k) && (S >= k) && (C >= k) && i < n && i <= j) {
+			MIN = min(MIN, H + U + S + C - k * 4);
+			if (s[i] == 'H') H--;
+			if (s[i] == 'U') U--;
+			if (s[i] == 'S') S--;
+			if (s[i] == 'C') C--;
+			i++;
+		} 	
+		j++;
+	}
+	cout << ((MIN == 1e7) ? -1 : MIN);
+	return 0;
+}
