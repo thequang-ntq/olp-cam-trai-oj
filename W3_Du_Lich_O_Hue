@@ -1,0 +1,435 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+const int VO_CUC = INT_MAX;
+
+vector<vector<int>> g;
+int n;
+int source;
+int target;
+vector<int> dist;
+vector<bool> coDinh;
+vector<int> num;
+vector<set<int>> truoc;
+
+#define FILE_IN "tc13.txt"
+#define FILE_OUT "tc13-out.txt"
+
+int minD;
+vector<vector<int>> lstPaths;
+
+void dijkstra(int src)
+{
+    dist.assign(n, VO_CUC);
+    coDinh.assign(n, false);
+    truoc.assign(n, set<int>());
+    num.assign(n, 0);
+
+    dist[src] = 0;
+    num[src] = 1;
+    truoc[src] = {src};
+    for (int idx = 0; idx < n - 1; idx++)
+    {
+        // Tìm u là đỉnh chưa cố định & có dist nhỏ nhất
+        int distMin = VO_CUC;
+        int uMin = -1;
+        for (int u = 0; u < n; u++)
+            if (coDinh[u] == false && dist[u] < distMin)
+            {
+                uMin = u;
+                distMin = dist[u];
+            }
+
+        if (uMin == -1)
+            break;
+
+        // Cố định uMin...
+        coDinh[uMin] = true;
+
+        // ... và cập nhật khoảng cách dựa theo uMin
+        for (int v = 0; v < n; v++)
+            if (coDinh[v] == false && g[uMin][v] < VO_CUC && dist[uMin] < VO_CUC)
+            {
+                if (dist[v] > dist[uMin] + g[uMin][v])
+                {
+                    dist[v] = dist[uMin] + g[uMin][v];
+                    truoc[v] = {uMin};
+                    num[v] = num[uMin];
+                }
+                else if (dist[v] == dist[uMin] + g[uMin][v])
+                {
+                    truoc[v].insert(uMin);
+                    num[v] += num[uMin];
+                }
+            }
+    }
+}
+
+void addEdge(int u, int v, int weight)
+{
+    g[u][v] = weight;
+    // g[v][u] = weight;
+}
+
+void addEdge2(int u, int v, int weight)
+{
+    u--;
+    v--;
+    addEdge(u, v, weight);
+}
+
+void initData()
+{
+    n = 9;
+    g = vector<vector<int>>(n, vector<int>(n, VO_CUC));
+    addEdge(0, 1, 4);
+    addEdge(0, 7, 8);
+    addEdge(1, 2, 8);
+    addEdge(1, 7, 11);
+    addEdge(7, 6, 1);
+    addEdge(7, 8, 7);
+    addEdge(2, 3, 7);
+    addEdge(2, 5, 4);
+    addEdge(2, 8, 2);
+    addEdge(8, 6, 6);
+    addEdge(6, 5, 2);
+    addEdge(3, 4, 9);
+    addEdge(3, 5, 14);
+    addEdge(5, 5, 10);
+
+    source = 1;
+    target = n;
+}
+
+void initData3()
+{
+    n = 5;
+    g = vector<vector<int>>(n, vector<int>(n, VO_CUC));
+    addEdge2(1, 2, 1);
+    addEdge2(1, 3, 10);
+    addEdge2(1, 4, 2);
+    addEdge2(2, 3, 15);
+    addEdge2(2, 5, 11);
+    addEdge2(3, 5, 2);
+    addEdge2(4, 3, 8);
+
+    source = 1;
+    target = 5;
+}
+
+void initData2()
+{
+    n = 5;
+    g = vector<vector<int>>(n, vector<int>(n, VO_CUC));
+    addEdge2(1, 2, 1);
+    addEdge2(1, 3, 1);
+    addEdge2(1, 4, 2);
+    addEdge2(1, 5, 7);
+    addEdge2(2, 4, 1);
+    addEdge2(2, 5, 6);
+    addEdge2(3, 4, 2);
+    addEdge2(4, 5, 5);
+
+    source = 1;
+    target = n;
+}
+
+void initDataR()
+{
+    srand((unsigned)time(NULL));
+    int maxC = 30;
+
+    n = 1000;
+    g = vector<vector<int>>(n, vector<int>(n, VO_CUC));
+
+    int m = (n * n / 6) + rand() % (n * n / 3);
+    m = (n * n / 3) + rand() % (n * n / 3);
+    m = (n * n / 4) + rand() % (n * n / 2);
+    // m = //(n * n / 17) +
+    //      * n + rand() % (n * n / 1600);
+    for (int i = 0; i < m; i++)
+    {
+        int u = rand() % n;
+        int v = rand() % n;
+        if (u != v)
+            g[u][v] = 1 + (rand() % maxC);
+    }
+
+    source = (rand() % n);
+    while (true)
+    {
+        target = (rand() % n);
+        if (target != source)
+            break;
+    }
+    // source = 2;
+    // target = n-1;
+}
+
+void printData()
+{
+    printf("Dữ liệu đầu vào\n");
+    vector<pair<int, int>> lstEdge;
+    for (int u = 0; u < n; u++)
+    {
+        for (int v = 0; v < n; v++)
+            if (g[u][v] != VO_CUC)
+                lstEdge.push_back(make_pair(u, v));
+    }
+
+    printf("%d %d\n", n, lstEdge.size());
+    for (auto e : lstEdge)
+        printf("%d %d %d\n", e.first + 1, e.second + 1, g[e.first][e.second]);
+    printf("%d %d", source + 1, target + 1);
+    printf("\n---");
+}
+
+vector<vector<int>> buildPaths(vector<set<int>> truoc, int source, int target)
+{
+    // in ra tất cả đường đi ngắn nhất từ source --> target
+    vector<vector<int>> paths;
+    vector<int> theFirst = {target};
+    paths.push_back(theFirst);
+    while (1 == 1)
+    {
+        bool hasExtend = false;
+        vector<vector<int>> paths2;
+        for (auto path : paths)
+        {
+            int dinhCuoi = path.back();
+            if (dinhCuoi == source)
+            {
+                paths2.push_back(path);
+                continue;
+            }
+            hasExtend = true;
+            for (auto it = truoc[dinhCuoi].begin(); it != truoc[dinhCuoi].end(); it++)
+            {
+                vector<int> newPath = path;
+                newPath.push_back(*it);
+                paths2.push_back(newPath);
+            }
+        }
+        if (hasExtend == false)
+            break;
+        paths = paths2;
+    }
+
+    for (auto &path : paths)
+        reverse(path.begin(), path.end());
+
+    // printf("Danh sach cac duong di ngan nhat tu %d den %d (chi phi %d)\n", source + 1, target + 1, dist[target]);
+    // for (auto path : paths)
+    // {
+    //     for (auto u : path)
+    //         printf("%d ", u + 1);
+    //     printf("\n");
+    // }
+
+    return paths;
+}
+
+vector<vector<int>> buildPaths2(vector<set<int>> &truoc, int source, int target)
+{
+    vector<vector<int>> paths3;
+    queue<vector<int>> q;
+    q.push({target});
+    while (q.empty() == false)
+    {
+        vector<int> path = q.front();
+        q.pop();
+
+        int u = path.back();
+        if (u == source)
+        {
+            paths3.push_back(path);
+        }
+        else
+        {
+            for (auto it = truoc[u].begin(); it != truoc[u].end(); it++)
+            {
+                vector<int> newPath = path;
+                newPath.push_back(*it);
+                q.push(newPath);
+            }
+        }
+    }
+
+    for (auto &path : paths3)
+        reverse(path.begin(), path.end());
+
+    return paths3;
+}
+
+int vector_compare(vector<int> &a, vector<int> &b)
+{
+    int i = 0;
+    while (true)
+    {
+        if (a[i] != b[i])
+        {
+            if (a[i] < b[i])
+                return -1;
+            else
+                return 1;
+        }
+        else
+        {
+            // ==
+            if (i >= a.size() && i >= b.size())
+                return 0; // a == b
+            else if (i >= a.size() && i < b.size())
+                return -1; // a < b
+            else if (i < a.size() && i >= b.size())
+                return 1; // a < b
+            else
+                i++; // i < a.size() && i < b.size()
+        }
+    }
+}
+
+void docDuLieu()
+{
+    // FILE *fin = freopen(FILE_IN, "r", stdin);
+    int m;
+    cin >> n >> m;
+    g = vector<vector<int>>(n, vector<int>(n, VO_CUC));
+    for (int i = 0; i < m; i++)
+    {
+        int u, v, w;
+        cin >> u >> v >> w;
+        u--;
+        v--;
+        g[u][v] = w;
+    }
+    cin >> source >> target;
+    source--;
+    target--;
+    // fclose(fin);
+}
+
+void findShortestPaths()
+{
+    dijkstra(source);
+
+    if (truoc[target].size() == 0)
+    {
+        return;
+    }
+    minD = dist[target];
+    vector<vector<int>> paths = buildPaths2(truoc, source, target);
+
+    for (int i = 0; i < paths.size(); i++)
+        for (int j = i + 1; j < paths.size(); j++)
+            if (vector_compare(paths[i], paths[j]) > 0)
+            {
+                auto tmp = paths[i];
+                paths[i] = paths[j];
+                paths[j] = tmp;
+            }
+    lstPaths = paths;
+}
+
+void readAndGenData()
+{
+    freopen("tc12.txt", "w", stdout);
+
+    // initData();
+    // initData3();
+    initDataR();
+
+    printData();
+    findShortestPaths();
+
+    // In kết quả
+    if (lstPaths.size() == 0)
+        printf("NA");
+    else
+    {
+        // printf("\nDanh sach cac duong di ngan nhat tu %d den %d (chi phi %d)\n", source + 1, target + 1, dist[target]);
+        printf("Chi phi = %d. SoDuong = %d", minD, lstPaths.size());
+        for (auto path : lstPaths)
+        {
+            for (auto u : path)
+                printf("%d ", u + 1);
+            printf("\n");
+        }
+    }
+    fclose(stdout);
+}
+
+string readFromFile()
+{
+    // printf("\nNoi dung file\n");
+    string stFile = "";
+    ifstream f(FILE_OUT);
+    while (true)
+    {
+        string line;
+        if (!getline(f, line))
+            break;
+        // cout << line << "\n";
+        stFile = stFile.append(line + "\r\n");
+    }
+    f.close();
+    return stFile;
+}
+
+void doOJ()
+{
+    docDuLieu();
+
+    findShortestPaths();
+
+    // In kết quả
+    string st = "";
+    if (lstPaths.size() == 0)
+    {
+        // printf("NA");
+        st = st.append("NA");
+    }
+    else
+    {
+        // printf("%d %d\n", minD, lstPaths.size());
+        st = st.append(to_string(minD) + " " + to_string(lstPaths.size()) + "\r\n");
+        // for (auto path : lstPaths)
+        for (int i = 0; i < lstPaths.size(); i++)
+        {
+            string line = "";
+            for (auto u : lstPaths[i])
+            {
+                // printf("%d ", u + 1);
+                line = line.append(to_string(u + 1) + " ");
+            }
+            // line = line.substr(0, line.length() - 1);
+            st = st.append(line);
+
+            if (i < lstPaths.size() - 1)
+            {
+                // printf("\n");
+                st = st.append("\r\n");
+            }
+        }
+    }
+    st = st.append("\r\n");
+    cout << st;
+    // string stExpected = readFromFile();
+    // if (st.compare(stExpected) == 0)
+    //     printf("\nCORRECTED");
+    // else
+    // {
+    //     printf("\nNOT CORRECT %d", st.compare(stExpected));
+    //     cout << "\n"
+    //          << stExpected;
+    // }
+}
+
+int main()
+{
+    // readAndGenData();
+
+    // freopen(FILE_OUT, "w", stdout);
+    doOJ();
+    return 0;
+}
