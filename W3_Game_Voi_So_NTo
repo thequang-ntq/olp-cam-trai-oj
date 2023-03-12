@@ -1,0 +1,154 @@
+#include <bits/stdc++.h>
+#define taskname "A"
+using namespace std;
+
+struct Node {
+	int val;
+	int weight, size;
+	Node *left, *right;
+	Node(int c) : val(c), weight(rand()), size(1), left(nullptr), right(nullptr) {}
+} *root;
+
+int size(Node *treap) { return treap ? treap->size : 0; }
+
+void split(Node *treap, Node *&left, Node *&right, int val) {
+	if (!treap) {
+		left = right = nullptr;
+		return;
+	}
+
+	if (size(treap->left) < val) {
+		split(treap->right, treap->right, right, val - size(treap->left) - 1);
+		left = treap;
+	} else {
+		split(treap->left, left, treap->left, val);
+		right = treap;
+	}
+	treap->size = 1 + size(treap->left) + size(treap->right);
+}
+
+void merge(Node *&treap, Node *left, Node *right) {
+	if (left == nullptr) {
+		treap = right;
+		return;
+	}
+	if (right == nullptr) {
+		treap = left;
+		return;
+	}
+
+	if (left->weight < right->weight) {
+		merge(left->right, left->right, right);
+		treap = left;
+	} else {
+		merge(right->left, left, right->left);
+		treap = right;
+	}
+	treap->size = 1 + size(treap->left) + size(treap->right);
+}
+
+void debug(Node *root) {
+    if (root == nullptr) return ;
+    debug(root->left);
+    cout << root->val << " ";
+    debug(root->right);
+}
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+
+void Solve() {
+    int N = 1e7;
+    vector<bool> isPrime(N + 1, true);
+
+    isPrime[0] = isPrime[1] = false;
+    for (int i = 2; i <= sqrt(N); i++) 
+        if (isPrime[i])
+            for (int j = i * i; j <= N; j += i)
+                isPrime[j] = false;
+
+    vector<int> primes;
+    for (int i = 2; i <= N; i++)
+        if (isPrime[i]) primes.push_back(i);
+    
+    int n, k, a; cin >> n >> k >> a;
+    Node *root = nullptr;
+    for (int i = 1; i <= n; i++)
+        merge(root, root, new Node(i));
+
+    int center = 1;
+    for (int i = 0; i < k; i++) {
+        int64_t r = primes[i] % (n * (n - 1));
+        int64_t k = r / n;
+        r %= n;
+    
+        Node *lt, *md, *rt;
+        split(root, md, rt, center);
+        split(md, lt, md, center - 1);
+
+        if (center + k <= n) {
+            Node *x, *y;
+            split(rt, x, y, k);
+            merge(root, lt, x);
+            merge(root, root, md);
+            merge(root, root, y);
+        }
+        else {
+            Node *x, *y, *f;
+            split(lt, x, y, center + k - n);
+            split(x, f, x, 1);
+            merge(root, x, md);
+            merge(root, root, y);
+            merge(root, root, rt);
+            merge(root, root, f);
+        }
+        center = (center - 1 + k) % n + 1;
+
+        split(root, md, rt, center);
+        split(md, lt, md, center - 1);
+        if (center + r <= n) {
+            Node *x, *y;
+            split(rt, x, y, r);
+
+            merge(root, lt, x);
+            merge(root, root, md);
+            merge(root, root, y);
+        }
+        else {
+            Node *x, *y, *f;
+            split(lt, x, y, center + r - n);
+            split(x, f, x, 1);
+            merge(root, x, md);
+            merge(root, root, y);
+            merge(root, root, rt);
+            merge(root, root, f);
+        }
+    }
+
+    vector<int> A;
+    function<void(Node*)> dfs = [&](Node *node) {
+        if (node == nullptr) return ;
+        dfs(node->left);
+        A.push_back(node->val);
+        dfs(node->right);
+    };
+    dfs(root);
+
+    for (int i = 0; i < n; i++) 
+        if (A[i] == a) {
+            cout << A[(i + 1) % n] << " " << A[(i - 1 + n) % n];
+            return ;
+        }
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
