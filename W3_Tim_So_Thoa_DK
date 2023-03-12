@@ -1,0 +1,25 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+typedef long long i64;
+
+int main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	i64 n;
+	cin >> n; 
+	vector<i64> a(n), b(n);
+	for(i64 &x: a) cin >> x;
+	for(i64 &x: b) cin >> x;
+	i64 mi = LLONG_MAX;
+	i64 mx = LLONG_MIN;
+	for(int i = 0; i < n; i++) {
+		mi = min(mi, b[i]);
+		mx = max(mx, a[i]);
+	}
+	i64 ans = 0;
+	if(mi >= mx) ans = mi - mx + 1;
+	cout << ans;
+	return 0;
+}
