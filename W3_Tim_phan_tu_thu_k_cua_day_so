@@ -1,0 +1,45 @@
+#include <bits/stdc++.h>
+#define taskname "A"
+using namespace std;
+
+typedef long long ll;
+
+void Input() {
+	ios_base::sync_with_stdio(false);
+	cin.tie(0); cout.tie(0);
+	if (fopen(taskname".inp", "r")) {
+		freopen(taskname".inp", "r", stdin);
+		freopen(taskname".out", "w", stdout);
+	}
+}
+
+void Solve() {
+	ll n, k; cin >> n >> k;
+
+	auto getLen = [&](ll x) {
+		int cnt = (x == 0);
+		for (; x > 0; x /= 10) cnt++;
+		return cnt;
+	};
+
+	vector<ll> len(min(n, 50ll) + 1, 0);
+	for (int i = 1; i <= min(50ll, n); i++)
+		len[i] = len[i - 1] * 2 + getLen(i);
+
+	if (n <= 50 && k > len[n]) return void(cout << -1); 
+
+	function<int(int, ll)> find = [&](int n, ll k) {
+		if (k <= getLen(n)) return to_string(n)[k - 1] - '0';
+		k -= getLen(n);
+		if (n > 50 || k <= len[n - 1]) return find(n - 1, k);
+		return find(n - 1, k - len[n - 1]);
+	};
+
+	cout << find(n, k);
+}
+
+int main(){
+	Input();
+	Solve();
+	return 0;
+}
