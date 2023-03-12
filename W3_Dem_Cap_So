@@ -1,0 +1,29 @@
+#include <bits/stdc++.h>
+#define ll long long
+#define el "\n"
+#define fu(i, a, b) for(ll i = a; i <= b; i++)
+#define fd(i, a, b) for(ll i = a; i >= b; i--)
+#define fi first
+#define se second
+#define INF 1e18
+
+using namespace std;
+
+const ll maxx = 1e5 + 3;
+
+ll n, x, ans;
+map <ll, ll> cnt;
+
+int main()
+{
+    cin >> n >> x;
+    fu(i, 1, n)
+    {
+        ll num;
+        cin >> num;
+        ans += cnt[x - num];
+        cnt[num]++;
+    }
+    cout << ans;
+    return 0;
+}
