@@ -1,0 +1,46 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+
+int n;
+ll cnt;
+vector <int> h;
+vector <pair <int, ll>> trees;
+
+void Task() {
+    ios_base :: sync_with_stdio(false); cin.tie(0); cout.tie(0);
+    if (fopen("test.inp", "r")) {
+        freopen("test.inp", "r", stdin);
+        freopen("test.out", "w", stdout);
+    }
+}
+
+void Solve() {
+    cin >> n;
+    h.resize(n);
+    for (int i = 0; i < n; ++i) {
+        cin >> h[i];
+    }
+
+    trees.resize(n + 9);
+    trees[0] = {h[n - 1], 0};
+    int sz = 0;
+    for (int i = n - 2; i >= 0; --i) {
+        ll cntt = 0;
+        while (sz >= 0 && h[i] > trees[sz].first) {
+            cntt += trees[sz].second + 1LL;
+            sz--;
+        }
+        trees[++sz] = {h[i], cntt};
+        cnt += cntt;
+    }
+
+    cout << cnt;
+}
+
+int main() {
+    Task();
+    Solve();
+}
