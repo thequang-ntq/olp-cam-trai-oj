@@ -1,0 +1,98 @@
+#include <bits/stdc++.h>
+#define taskname "A"
+using namespace std;
+
+typedef long long ll;
+const ll mod = 1e9+7;
+int nTest = 1;
+
+template <typename T>
+class Matrix {
+private:
+    int r, c;
+    vector<vector<T>> arr;
+
+public:
+    Matrix() : r(0), c(0) {}
+    Matrix(int _r, int _c) : r(_r), c(_c), arr(r, vector<T>(c)) {}
+    Matrix(int _r, int _c, const T &init) : r(_r), c(_c), arr(r, vector<T>(c, init)) {}
+    Matrix(const vector<vector<T>> &data) : r(data.size()), c(data.size() > 0 ? data[0].size() : 0), arr(data) {}
+
+    int row() const { return r; }
+    int col() const { return c; }
+    vector<T>& operator [](int r_id) { return arr[r_id]; }
+    const vector<T>& operator [](int r_id) const { return arr[r_id]; }
+
+    static Matrix identity(int sz) {
+        Matrix ans(sz, sz, 0);
+        for (int i = 0; i < sz; i++) ans[i][i] = 1;
+        return ans;
+    }
+
+    Matrix operator *(const Matrix &other){
+        assert(col() == other.row());
+        Matrix ans(row(), other.col(), 0);
+        for (int i = 0; i < row(); i++)
+            for (int j = 0; j < other.col(); j++) 
+                for (int k = 0; k < col(); k++)
+                    ans[i][j] = (ans[i][j] + arr[i][k] * other.arr[k][j] % mod) % mod;
+        return ans;
+    }
+
+    Matrix pow(long long e) {
+        assert(row() == col());
+        Matrix b = *this, ans = identity(row());
+        for (; e > 0; e >>= 1, b = b * b)
+            if (e & 1) ans = ans * b;
+        return ans;
+    }
+};
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+    cin >> nTest;
+}
+
+void Solve() {
+    int n; cin >> n;
+
+    ll ans = 0;
+    {
+        Matrix<ll> A({{1, 1}});
+        Matrix<ll> B({{1, 1}, {1, 0}});
+        if (n >= 2) {
+            A = A * B.pow(n - 1);
+            ans = (ans + A[0][0] - 1 + mod) % mod;
+        }
+    }
+    {
+        Matrix<ll> A({{1, 1, 1}});
+        Matrix<ll> B({{1, 1, 0}, {0, 0, 1}, {1, 0, 0}});
+        if (n >= 3) {
+            A = A * B.pow(n - 2);
+            ans = (ans + A[0][0] - 1 + mod) % mod;
+        }
+    }
+    {
+        Matrix<ll> A({{1, 1, 1, 1}});
+        Matrix<ll> B({{1, 1, 0, 0}, {0, 0, 1, 0}, {0, 0, 0, 1}, {1, 0, 0, 0}});
+        if (n >= 4) {
+            A = A * B.pow(n - 3);
+            ans = (ans + A[0][0] - 1 + mod) % mod;
+        }
+    }
+
+    cout << ans << "\n";
+
+}
+
+int main(){
+    Input();
+    while (nTest--) Solve();
+    return 0;
+}
