@@ -1,0 +1,53 @@
+#include <bits/stdc++.h>
+#define taskname "A"
+using namespace std;
+
+typedef long long ll;
+
+void Input() {
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+void Solve() {
+    int n; cin >> n;
+    vector<ll> a(n);
+    for (auto &i: a) cin >> i;
+
+    auto gcd = [&]() {
+        ll g = 0;
+        for (auto &i: a) g = __gcd(g, abs(i));
+        return g;
+    };
+
+    if (gcd() != 1) return void(cout << "YES\n" << 0);
+
+    int ans = 0;
+    for (int i = 0; i < n - 1; i++) 
+        if (a[i] % 2 && a[i + 1] % 2) {
+            ll x = a[i] - a[i + 1], y = a[i] + a[i + 1];
+            a[i] = x; a[i + 1] = y, ans++;
+        } 
+    if (gcd() != 1) return void(cout << "YES\n" << ans);
+
+    for (int i = 0; i < n - 1; i++)
+        if (a[i] % 2 || a[i + 1] % 2) {
+            {
+                ll x = a[i] - a[i + 1], y = a[i] + a[i + 1];
+                a[i] = x; a[i + 1] = y, ans++;
+            }
+            {
+                ll x = a[i] - a[i + 1], y = a[i] + a[i + 1];
+                a[i] = x; a[i + 1] = y, ans++;
+            }
+        }
+    cout << "YES\n" << ans;
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
