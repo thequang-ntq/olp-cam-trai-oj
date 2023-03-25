@@ -1,0 +1,107 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#ifdef LOCAL_DEBUG
+#include "algo/debug.h"
+#else
+#define debug(...) 42 
+#endif
+
+using i64 = long long;
+
+const int P = 31, N = 3e5;
+vector<i64> p(N);
+
+class segtree {
+ private:
+   int n, md;
+   string a;
+   vector<i64> tree;
+ public:
+   segtree(const string& _a, int md) {
+     this->n = _a.size() - 1;
+     this->a = _a;
+     this->tree.resize((n << 2) + 10);
+     this->md = md;
+     this-> init(1, 1, n);
+   }
+  void init(int id, int l, int r) {
+    if (l == r) {
+      return void(tree[id] = (a[l] - 'a' + 1));
+    }
+    int m = (l + r) >> 1;
+    init(id << 1, l, m);
+    init(id << 1 | 1, m + 1, r);
+    push_up(id, l, r, m);
+  }
+  void push_up(int id, int l, int r, int m) {
+    debug(l, r, m);
+    tree[id] = (tree[id << 1] * p[r - m] + tree[id << 1 | 1]) % md;
+  }
+  void modify(int id, int l, int r, int pos, char u) {
+    if (l == r) {
+      return void(tree[id] = (u - 'a' + 1) % md);
+    }
+    int m = (l + r) >> 1;
+    if (pos <= m) {
+      modify(id << 1, l, m, pos, u);
+    } else {
+      modify(id << 1 | 1, m + 1, r, pos, u);
+    }
+    push_up(id, l, r, m);
+  }
+  i64 get(int id, int l, int r, int u, int v) {
+    if (l > v || r < u) {
+      return 0;
+    }
+    if (l >= u && r <= v) {
+      debug(l, r, v - r);
+      return (tree[id] * p[v - r]) % md;
+    }
+    int m = (l + r) >> 1;
+    return (get(id << 1, l, m, u, v) + get(id << 1 | 1, m + 1, r, u, v)) % md; 
+  }
+  i64 get(int l, int r) {
+    return get(1, 1, n, l, r);
+  }
+  void modify(int ps, char u) {
+    return modify(1, 1, n, ps, u);
+  }
+};
+
+void solve() {
+  string s;
+  int m, q;
+  cin >> s >> m >> q;
+  p[0] = 1;
+  s = " " + s;
+  for (int i = 1; i < N; i++) {
+    p[i] = (P * p[i - 1]) % m;
+  } 
+  segtree* st = new segtree(s, m);
+  while (q--) {
+    char op;
+    cin >> op;
+
+    if (op == '?') {
+      int l, r;
+      cin >> l >> r;
+      cout << st->get(l, r) << '\n'; 
+    } else {
+      int pos;
+      char u;
+      cin >> pos >> u;
+      st->modify(pos, u);
+    }
+  }
+}
+
+int main() {
+  cin.tie(nullptr) -> sync_with_stdio(false);
+  int TC = 1;
+  // cin >> TC;
+  while(TC--) {
+    solve();
+  }
+}
