@@ -1,0 +1,38 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+long long calc(int x, int y) {
+    long long res = 0;
+    for(int l = 1, r; l <= y; l = r + 1) {
+        r = y / (y / l);
+        if(l <= x) {
+            r = min(r, x / (x / l));
+        }
+        res += (long long)((y / l) - (x / l)) * (r - l + 1);
+    }
+    return res;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);cout.tie(NULL);
+    int n, m;
+    cin >> n >> m;
+    int sum = n + m;
+    long long res = 0;
+    for(int l = 1, r; l <= sum; l = r + 1) {
+        r = sum / (sum / l);
+        if(l <= n) {
+            r = min(r, n / (n / l));
+        }
+        if(l <= m) {
+            r = min(r, m / (m / l));
+        }
+        if((n / l) + (m / l) < (sum / l)) {
+            res += calc(l - 1, r);
+        }
+    }
+    cout << res;
+    return 0;
+}
