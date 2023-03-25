@@ -1,0 +1,43 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+typedef long long ll;
+typedef long double ld;
+
+ll x, y;
+vector <ll> fib;
+
+void Task() {
+    ios_base :: sync_with_stdio(false); cin.tie(0); cout.tie(0);
+    if (fopen("test.inp", "r")) {
+        freopen("test.inp", "r", stdin);
+        freopen("test.out", "w", stdout);
+    }
+}
+
+void Solve() {
+    cin >> x >> y;
+
+    if (x == y) {
+        return void(cout << 0);
+    }
+
+    fib.resize(99);
+    fib[0] = fib[1] = 1;
+    for (int i = 2; i <= 88; ++i) {
+        fib[i] = fib[i - 1] + fib[i - 2];
+    }
+
+    ld k = ((ld)x - 1.0) / ((ld)y - 1.0);
+    for (int i = 2; i <= 88; ++i) {
+        if (fib[i] >= k) {
+            return void(cout << i + 1);
+        }
+    }
+}
+
+int main() {
+    Task();
+    Solve();
+}
