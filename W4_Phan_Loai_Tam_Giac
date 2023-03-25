@@ -1,0 +1,85 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+typedef long long ll;
+
+bool isSquare(ll n) {
+  ll x = sqrt(n);
+  return x * x == n;
+}
+
+ll nC3(ll n) {
+  return n * (n - 1) * (n - 2) / 6;
+}
+
+void Solve() {
+  int n;
+  cin >> n;
+  vector<ll> a(n);
+  map<ll, ll> mp;
+  for (int i = 0; i < n; i++) {
+    cin >> a[i];
+    mp[a[i]]++;
+  }
+  sort(a.begin(), a.end());
+  ll cntS = 0;
+  ll cntN = 0;
+  ll cntSum = 0;
+  for (int i = 0; i < n; i++) {
+    for (int j = i + 1; j < n; j++) {
+      ll p = a[i] * a[i] + a[j] * a[j];
+      if (isSquare(p) && mp[(ll)sqrt(p)]) {
+        cntS += mp[(ll)sqrt(p)];
+      }
+    }
+  }
+  for (int i = 0; i < n; i++) {
+    for (int j = i + 1; j < n; j++) {
+      ll p = a[i] * a[i] + a[j] * a[j];
+      int l = j + 1, r = n - 1;
+      bool ok = false;
+      while (l <= r) {
+        int mid = (l + r) >> 1;
+        if (a[mid] * a[mid] < p && a[i] + a[j] > a[mid]) {
+          ok = true;
+          l = mid + 1;
+        }
+        else {
+          r = mid - 1;
+        }
+      }
+      if (ok) {
+        ll len = l - j - 1;
+        cntN += len;
+      }
+    }
+  }
+  for (int i = 0; i < n; i++) {
+    for (int j = i + 1; j < n; j++) {
+      bool ok = false;
+      int l = j + 1, r = n - 1;
+      while (l <= r) {
+        int mid = (l + r) >> 1;
+        if (a[i] + a[j] > a[mid]) {
+          ok = true;
+          l = mid + 1;
+        }
+        else {
+          r = mid - 1;
+        }
+      }
+      if (ok) {
+        cntSum += l - j - 1;
+      }
+    }
+  }
+  cout << cntN << ' ' << cntS << ' ' << cntSum - (cntN + cntS) << '\n';
+}
+
+int main() {
+ ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0);
+ int cas = 1;
+//  cin >> cas;
+ while (cas--) Solve();
+ return 0;
+}
