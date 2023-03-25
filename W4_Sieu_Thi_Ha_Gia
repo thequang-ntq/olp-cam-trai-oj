@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+#define taskname "A"
+using namespace std;
+
+typedef long long ll;
+
+void Input() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(0); cout.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+
+void Solve() {
+    int n, m; cin >> n >> m;
+    vector<pair<int, ll>> A(n);
+    for (auto &item: A) {
+        for (int j = 0; j < m; j++) {
+            int bit; cin >> bit;
+            item.first += bit * (1 << j); 
+        }
+        cin >> item.second;
+    }
+
+    for (int j = 0; j < m; j++) {
+        bool haveOne = false;
+        for (auto &item: A)
+            if (item.first & (1 << j)) haveOne = true;
+        if (!haveOne) return void(cout << -1);
+    }
+
+    sort(A.begin(), A.end(), [](pair<int, ll> a, pair<int, ll> b) {
+        return a.second > b.second;
+    });
+
+    vector<int> sufMask(n + 1, 0);
+    for (int i = n - 1; i >= 0; i--)
+        sufMask[i] = sufMask[i + 1] | A[i].first;
+
+    ll ans = 1e18;
+    function<void(int, int, ll)> backtrack = [&](int i, int mask, ll cost) {
+        if (cost >= ans) return ;
+        if (mask == (1 << m) - 1) return void(ans = min(ans, cost));
+        if (i == n) return ;
+        if ((mask | sufMask[i + 1]) == (1 << m) - 1) backtrack(i + 1, mask, cost);
+        if ((mask | A[i].first) != mask) backtrack(i + 1, mask | A[i].first, cost + A[i].second); 
+    };
+
+    backtrack(0, 0, 0);
+    cout << ans;
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
