@@ -1,0 +1,133 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#ifdef LOCAL_DEBUG
+#include "algo/debug.h"
+#else
+#define debug(...) 42 
+#endif
+
+using i64 = long long;
+
+struct node {
+  int data;
+  node* next;
+};
+
+node* make_node(int x) {
+  node* tmp = new node;
+  tmp->data = x;
+  tmp->next = nullptr;
+  return tmp;
+}
+
+void insert_first(node *&f, int x) {
+  if (f == nullptr) {
+    f = make_node(x);
+  } else {
+    node* tmp = make_node(x);
+    tmp->next = f;
+    f = tmp;
+  }
+}
+
+void insert_last(node*& f, int x) {
+  if (f == nullptr) {
+    insert_first(f, x);
+    return;
+  }
+  insert_last(f->next, x);
+}
+
+int size(node *f) {
+  if (f == nullptr) {
+    return 0;
+  }
+  return 1 + size(f->next);
+}
+
+void insert_bef(node *&f, int n, int p) {
+  int sz = size(f);
+  if (p > sz || p <= 0) {
+    insert_last(f, n);
+    return;
+  }
+  if (p - 1 == 0) {
+    insert_first(f, n);
+    return;
+  }
+  insert_bef(f->next, n, p - 1);
+}
+
+void print(node *f) {
+  if (f == nullptr) {
+    cout << '\n';
+    return;
+  }
+  cout << f->data << ' ';
+  print(f->next);
+}
+void Delete(node*&f , int pos, int sz) {
+  if (pos > sz || pos <= 0) {
+    return;
+  }
+  if (pos - 1 == 0) {
+    node* tmp = f;
+    f = f->next;
+    delete(tmp);
+    return;
+  }
+  Delete(f->next, pos - 1, sz);
+}
+
+float avg(node *f) {
+  float s = 0;
+  int sz = size(f);
+  if (sz == 0) {
+    return 0.0;
+  }
+  while (f != nullptr) {
+    s += f->data;
+    f = f->next;
+  }
+  return s / (1.0 * sz);
+}
+
+void solve() {
+  node *f = nullptr;
+  int n;
+  cin >> n;
+  for (int i = 0; i < n; i++) {
+    int x;
+    cin >> x;
+    insert_last(f, x);
+  }
+  while (true) {
+    char op;
+    cin >> op;
+    if (op == '0') {
+      cin >> op;
+      break;
+    } else if (op == 'a') {
+      cout << fixed << setprecision(4) << avg(f) << '\n'; 
+    } else if (op == 'i') {
+      int x, p;
+      cin >> x >> p;
+      insert_bef(f, x, p);
+    } else if (op == 'd') {
+      int p;
+      cin >> p;
+      Delete(f, p, size(f));
+    }
+  }
+}
+
+int main() {
+  cin.tie(nullptr) -> sync_with_stdio(false);
+  int TC = 1;
+  // cin >> TC;
+  while(TC--) {
+    solve();
+  }
+}
