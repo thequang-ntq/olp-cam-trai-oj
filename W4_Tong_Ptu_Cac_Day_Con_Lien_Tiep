@@ -1,0 +1,95 @@
+#include <bits/stdc++.h>
+#define taskname "A"
+using namespace std;
+
+typedef long long ll;
+
+class SegTree {
+private:
+    int sz;
+    vector<pair<ll, int>> STMax;
+    vector<pair<ll, int>> STMin; 
+
+public:
+    SegTree(int sz) {
+        this->sz = sz;
+        STMax.resize(4 * sz + 1);
+        STMin.resize(4 * sz + 1);
+    }
+    pair<ll, int> combineMax(pair<ll, int> l, pair<ll, int> r) {
+        return max(l, r);
+    }
+    pair<ll, int> combineMin(pair<ll, int> l, pair<ll, int> r) {
+        return min(l, r);
+    }
+    void update(int id, int l, int r, int u, int v, ll val) {
+        if (r < u || v < l) return ;
+        if (u <= l && r <= v) {
+            STMax[id] = STMin[id] = {val, l};
+            return ;
+        }
+        int m = (l + r) >> 1;
+        update(id << 1, l, m, u, v, val);
+        update(id << 1 | 1, m + 1, r, u, v, val);
+        STMax[id] = combineMax(STMax[id << 1], STMax[id << 1 | 1]);
+        STMin[id] = combineMin(STMin[id << 1], STMin[id << 1 | 1]);
+    }
+    pair<ll, int> getMax(int id, int l, int r, int u, int v) {
+        if (r < u || v < l) return {-1, -1};
+        if (u <= l && r <= v) return STMax[id];
+        int m = (l + r) >> 1;
+        return combineMax(getMax(id << 1, l, m, u, v), getMax(id << 1 | 1, m + 1, r, u, v));
+    }
+    pair<ll, int> getMin(int id, int l, int r, int u, int v) {
+        if (r < u || v < l) return {2e9, -1};
+        if (u <= l && r <= v) return STMin[id];
+        int m = (l + r) >> 1;
+        return combineMin(getMin(id << 1, l, m, u, v), getMin(id << 1 | 1, m + 1, r, u, v));
+    } 
+    void update(int p, ll val) { update(1, 1, sz, p, p, val); }
+    int getMax(int l, int r) { return getMax(1, 1, sz, l, r).second; }
+    int getMin(int l, int r) { return getMin(1, 1, sz, l, r).second; }
+};
+
+void Input() {
+    ios_base::sync_with_stdio(false); cin.tie(0);
+    if (fopen(taskname".inp", "r")) {
+        freopen(taskname".inp", "r", stdin);
+        freopen(taskname".out", "w", stdout);
+    }
+}
+void Solve() {
+    int n; cin >> n;
+    vector<ll> a(n + 1);
+    for (int i = 1; i <= n; i++) cin >> a[i];
+
+    SegTree ST(n);
+    for (int i = 1; i <= n; i++) ST.update(i, a[i]);
+
+    ll ans = 0;
+    function<void(int, int)> dcqMax = [&](int l, int r) {
+        if (l > r) return ;
+        int m = ST.getMax(l, r);
+        ans += a[m] * (m - l + 1) * (r - m + 1);
+        dcqMax(l, m - 1);
+        dcqMax(m + 1, r);
+    };
+    dcqMax(1, n);
+
+    function<void(int, int)> dcqMin = [&](int l, int r) {
+        if (l > r) return ;
+        int m = ST.getMin(l, r);
+        ans -= a[m] * (m - l + 1) * (r - m + 1);
+        dcqMin(l, m - 1);
+        dcqMin(m + 1, r);
+    };
+    dcqMin(1, n);
+
+    cout << ans;
+}
+
+int main(){
+    Input();
+    Solve();
+    return 0;
+}
