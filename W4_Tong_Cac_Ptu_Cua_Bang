@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+typedef long long i64;
+const int M = 1e9 + 7;
+
+i64 add(i64 a, i64 b) {
+	return ((a % M) + (b % M)) % M; 
+}
+i64 multi(i64 a, i64 b) {
+	return (a % M) * (b % M) % M;
+}
+int main() {
+	ios::sync_with_stdio(0);
+	cin.tie(0);
+	i64 n, m, k;
+	cin >> n >> m >> k;
+	vector<i64> row(n, 1);
+	vector<i64> col(m, 1);
+	for (int i = 0; i < k; i++) {
+		char t; int x, y;
+		cin >> t >> x >> y;
+		x--;
+		if(t == 'R') {
+			row[x] = multi(row[x], y);   	
+		} else {
+			col[x] = multi(col[x], y);
+		}
+	}
+	i64 fr = 0;
+	for(int i = 0; i < m; i++) {
+		fr = add(fr, multi((i + 1), col[i]));
+	}
+	i64 time = 0;
+	for(int i = 0; i < m; i++) {
+		time = add(time, col[i]);
+	}
+	time = multi(time, m);
+	i64 ans = 0;
+	for(int i = 0; i < n; i++) {
+		i64 currRow = add(fr, multi(time, i));
+		ans = add(ans, multi(currRow, row[i]));
+	}
+	cout << ans << '\n';
+	return 0;
+}
+
