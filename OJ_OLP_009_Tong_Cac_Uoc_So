@@ -1,0 +1,32 @@
+//source: https://www.youtube.com/watch?v=JqWiWJQOQyU
+#include <bits/stdc++.h>
+#pragma GCC optimize("Ofast")
+#define taskname "__Quang__"
+#define ll long long
+const int mod = 1e9+7;
+using namespace std;
+ll dapan(int coso, int somu){
+    if(somu == 0) return 1;
+    ll kq = dapan(coso, somu/2);
+    if(somu % 2 == 1){
+        return (((kq * kq) % mod) * coso) % mod;
+    }
+    else{
+        return (kq * kq) % mod;
+    }
+}
+int main()
+{
+    ll n ; cin>>n;
+    ll res = 0;
+    for(ll i =1,j; i<=n; i = j){
+        ll q = n/i;
+        j = n/q + 1;
+        ll a = ((((j % mod) * ((j-1) % mod)) % mod) * dapan(2, mod-2)) % mod;
+        ll b = ((((i % mod) * ((i-1) % mod)) % mod) * dapan(2,mod-2)) % mod;
+        ll re = (a - b + mod) % mod;
+        res = (res + (q % mod) * re) % mod; 
+    }
+    cout<< res << '\n';
+    return 0;
+}
